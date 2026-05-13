@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f0f1a;
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#header {
+  width: 100%;
+  background: #1a1a2e;
+  padding: 18px 24px;
+  border-bottom: 2px solid #7c3aed;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#header .dot {
+  width: 10px; height: 10px;
+  background: #7c3aed;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #7c3aed;
+}
+
+#header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: 0.05em;
+}
+
+#header span {
+  font-size: 11px;
+  color: #7c3aed;
+  margin-left: auto;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+#chat-box {
+  flex: 1;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+#chat-box::-webkit-scrollbar { width: 4px; }
+#chat-box::-webkit-scrollbar-thumb {
+  background: #7c3aed44;
+  border-radius: 2px;
+}
+
+.message {
+  padding: 12px 16px;
+  max-width: 75%;
+  line-height: 1.6;
+  font-size: 14px;
+  animation: fadeUp 0.3s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user {
+  background: #7c3aed;
+  align-self: flex-end;
+  border-radius: 16px 4px 16px 16px;
+}
+
+.bot {
+  background: #16213e;
+  align-self: flex-start;
+  border-left: 3px solid #7c3aed;
+  color: #e2e8f0;
+  border-radius: 4px 16px 16px 16px;
+}
+
+#input-area {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 20px;
+  padding: 0 20px;
+  display: flex;
+  gap: 10px;
+}
+
+#input {
+  flex: 1;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1.5px solid #ffffff11;
+  background: #1a1a2e;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#input:focus { border-color: #7c3aed; }
+
+#send-btn {
+  padding: 12px 24px;
+  background: #7c3aed;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#send-btn:hover { background: #6d28d9; }
+#send-btn:active { transform: scale(0.96); }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <div class="dot"></div>
+  <h2>SkillGuide</h2>
+  <span>AI Mentor</span>
+</div>
+<div id="chat-box"></div>
+<div id="input-area">
+  <input id="input" type="text" placeholder="Ask me anything..." />
+  <button id="send-btn">Send →</button>
+</div>
+
+  <script>
+    const chatBox = document.getElementById('chat-box')
+    const input = document.getElementById('input')
+    const sendBtn = document.getElementById('send-btn')
+
+    function addMessage(text, sender) {
+      const div = document.createElement('div')
+      div.classList.add('message', sender)
+      div.textContent = text
+      chatBox.appendChild(div)
+      chatBox.scrollTop = chatBox.scrollHeight
+    }
+
+    async function sendMessage() {
+      const message = input.value.trim()
+      if (!message) return
+
+      addMessage(message, 'user')
+      input.value = ''
+
+      const response = await fetch('http://localhost:3000/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      })
+
+      const data = await response.json()
+      addMessage(data.reply, 'bot')
+    }
+
+    sendBtn.addEventListener('click', sendMessage)
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMessage()
+    })
+  </script>
+
+</body>
+</html>
