@@ -10,19 +10,20 @@ app.use(express.json())
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 
 app.post('/chat', async (req, res) => {
-  const userMessage = req.body.message
+  const messages = req.body.messages
 
   // check if message is empty
-  if (!userMessage) {
-    return res.status(400).json({ error: 'Message is required' })
+  if (!messages || messages.length === 0) {
+    return res.status(400).json({ error: 'Messages are required' })
   }
 
   try {
     const response = await groq.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
-      messages: [
-        { role: 'user', content: userMessage }
-      ]
+     messages: [
+  { role: 'system', content: 'You are SkillGuide, a friendly AI mentor that helps students learn any skill. Guide them with questions, break topics into small steps, and encourage them.' },
+  ...messages
+]
     })
 
     const reply = response.choices[0].message.content
