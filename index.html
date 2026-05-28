@@ -44,18 +44,19 @@
       flex-shrink: 0;
     }
 
-    .sidebar-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px 16px;
-      border-bottom: 1px solid #1f1f1f;
-      margin-bottom: 6px;
-    }
+   .sidebar-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px 16px;
+  border-bottom: 1px solid #1f1f1f;
+  margin-bottom: 6px;
+}
 
     .logo-icon {
-      width: 28px;
-      height: 28px;
+      width: 48px;
+      height: 38px;
       background: #fff;
       border-radius: 6px;
       display: flex;
@@ -166,7 +167,7 @@
 
     #chat-title {
       font-size: 13px;
-      color: #52525b;
+      color: #f9f9fc;
       font-weight: 400;
     }
 
@@ -206,10 +207,10 @@
     }
 
     .welcome-icon {
-      width: 48px;
-      height: 48px;
-      background: #111;
-      border: 1px solid #222;
+      width: 55px;
+      height: 55px;
+      background: transparent;
+      border: none;
       border-radius: 12px;
       display: flex;
       align-items: center;
@@ -576,9 +577,8 @@
 
   <div id="sidebar">
     <div class="sidebar-logo">
-      <div class="logo-icon">🎓</div>
-      <span>SkillGuide</span>
-    </div>
+  <img src="logo.png" height="75" style="object-fit: contain;">
+</div>
 
 
 
@@ -588,7 +588,7 @@
     <div class="section-label">Recent</div>
     <div id="chat-list"></div>
     <div id="sidebar-footer">
-  <div id="user-profile" style="
+      <div id="user-profile" style="
     display: flex;
     align-items: center;
     gap: 10px;
@@ -597,9 +597,10 @@
     border-radius: 8px;
     margin-bottom: 8px;
   ">
-    <img id="user-avatar" src="" width="28" height="28" style="border-radius: 50%; flex-shrink:0;">
-    <span id="user-name" style="font-size: 12px; color: #a1a1aa; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
-    <button onclick="logout()" style="
+        <img id="user-avatar" src="" width="28" height="28" style="border-radius: 50%; flex-shrink:0;">
+        <span id="user-name"
+          style="font-size: 12px; color: #a1a1aa; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
+        <button onclick="logout()" style="
       background: transparent;
       border: 1px solid #2a2a2a;
       color: #52525b;
@@ -611,16 +612,16 @@
       transition: all 0.15s;
       flex-shrink: 0;
     " onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#52525b'">
-      Logout
-    </button>
-  </div>
-  <div style="font-size: 11px; color: #27272a; text-align:center;">Powered by Groq · LLaMA 3.3</div>
-</div>
+          Logout
+        </button>
+      </div>
+      <div style="font-size: 11px; color: #27272a; text-align:center;">Powered by Groq · LLaMA 3.3</div>
+    </div>
   </div>
 
   <div id="main">
     <div id="header">
-      <div id="chat-title">New conversation</div>
+      <div id="chat-title">SkillGuide</div>
       <div class="model-badge">⚡ LLaMA 3.3 70B</div>
     </div>
 
@@ -650,7 +651,7 @@
 
   <script>
 
-     const firebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyDvME58lvQHxOyzzAJR_OE58efYqwe_4sc",
       authDomain: "skillguide-bfafd.firebaseapp.com",
       projectId: "skillguide-bfafd",
@@ -659,8 +660,8 @@
       appId: "1:1089807024172:web:446723b1771311a5b29189"
     };
     firebase.initializeApp(firebaseConfig)
-      const auth = firebase.auth()
-      const provider = new firebase.auth.GoogleAuthProvider()
+    const auth = firebase.auth()
+    const provider = new firebase.auth.GoogleAuthProvider()
 
 
     const chatBox = document.getElementById('chat-box')
@@ -677,7 +678,7 @@
     function showWelcome() {
       chatBox.innerHTML = `
         <div id="welcome">
-          <div class="welcome-icon">🎓</div>
+          <div class="welcome-icon"><img src="logo.png" height="100" style="object-fit:contain;"></div>
           <h2>What do you want to learn?</h2>
           <p>Ask me anything — I'll guide you step by step like a personal mentor.</p>
           <div class="suggestion-chips">
@@ -698,23 +699,23 @@
     })
 
     // Auth state listener
- auth.onAuthStateChanged((user) => {
-  
-  if (user) {
-    // User logged in
-    document.getElementById('login-screen').style.display = 'none'
-    document.getElementById('user-avatar').src = user.photoURL
-    document.getElementById('user-name').textContent = user.displayName
-    window.currentUserId = user.uid
-    loadChatsFromDB()
-  } else {
-    // User logged out
-    document.getElementById('login-screen').style.display = 'flex'
-    document.getElementById('user-avatar').src = ''
-    document.getElementById('user-name').textContent = ''
-    window.currentUserId = null
-  }
-})
+    auth.onAuthStateChanged((user) => {
+
+      if (user) {
+        // User logged in
+        document.getElementById('login-screen').style.display = 'none'
+        document.getElementById('user-avatar').src = user.photoURL
+        document.getElementById('user-name').textContent = user.displayName
+        window.currentUserId = user.uid
+        loadChatsFromDB()
+      } else {
+        // User logged out
+        document.getElementById('login-screen').style.display = 'flex'
+        document.getElementById('user-avatar').src = ''
+        document.getElementById('user-name').textContent = ''
+        window.currentUserId = null
+      }
+    })
 
     function newChat() {
       const id = generateId()
@@ -724,7 +725,7 @@
       messageHistory = []
       renderSidebar()
       showWelcome()
-      chatTitle.textContent = 'New conversation'
+      chatTitle.textContent = 'SkillGuide'
       input.focus()
     }
 
@@ -748,11 +749,75 @@
       chats.forEach(chat => {
         const div = document.createElement('div')
         div.className = 'chat-item' + (chat.id === currentChatId ? ' active' : '')
-        div.textContent = chat.title
-        div.onclick = () => switchChat(chat.id)
+        div.style.display = 'flex'
+        div.style.alignItems = 'center'
+        div.innerHTML = `
+      <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${chat.title}</span>
+      <button class="delete-chat-btn" onclick="deleteChat(event, '${chat.id}')" style="
+        background: transparent;
+        border: none;
+        color: #3f3f46;
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 4px;
+        display: none;
+        flex-shrink: 0;
+      ">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3,6 5,6 21,6"></polyline>
+          <path d="M19,6l-1,14H6L5,6"></path>
+          <path d="M10,11v6"></path>
+          <path d="M14,11v6"></path>
+          <path d="M9,6V4h6v2"></path>
+        </svg>
+      </button>
+    `
+        div.querySelector('.delete-chat-btn').addEventListener('mouseenter', function () {
+          this.style.color = '#ef4444'
+        })
+        div.querySelector('.delete-chat-btn').addEventListener('mouseleave', function () {
+          this.style.color = '#3f3f46'
+        })
+        div.addEventListener('mouseenter', () => {
+          div.querySelector('.delete-chat-btn').style.display = 'block'
+        })
+        div.addEventListener('mouseleave', () => {
+          div.querySelector('.delete-chat-btn').style.display = 'none'
+        })
+        div.addEventListener('click', (e) => {
+          if (!e.target.closest('.delete-chat-btn')) switchChat(chat.id)
+        })
         chatList.appendChild(div)
       })
     }
+
+    async function deleteChat(e, chatId) {
+      e.stopPropagation()
+
+      try {
+        await fetch(`http://localhost:3000/chats/${chatId}`, {
+          method: 'DELETE'
+        })
+
+        chats = chats.filter(c => c.id !== chatId)
+
+        if (currentChatId === chatId) {
+          currentChatId = null
+          messageHistory = []
+          if (chats.length > 0) {
+            switchChat(chats[0].id)
+          } else {
+            newChat()
+          }
+        }
+
+        renderSidebar()
+
+      } catch (err) {
+        console.log('Could not delete chat:', err)
+      }
+    }
+
 
     function addMessageToDOM(role, content) {
       const w = document.getElementById('welcome')
@@ -820,9 +885,9 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ messages: messageHistory, chatId: currentChatId, userId: window.currentUserId })
-          
+
         })
-        console.log('Sending userId:', window.currentUserId)
+        // console.log('Sending userId:', window.currentUserId)
 
         const data = await response.json()
         document.getElementById('thinking-row')?.remove()
@@ -857,10 +922,10 @@
 
 
     async function loadChatsFromDB() {
-      console.log('Loading chats for userId:', window.currentUserId)
+      // console.log('Loading chats for userId:', window.currentUserId)
       try {
-const response = await fetch(`http://localhost:3000/chats?userId=${window.currentUserId}`)     
-   const data = await response.json()
+        const response = await fetch(`http://localhost:3000/chats?userId=${window.currentUserId}`)
+        const data = await response.json()
 
         chats = data.map(c => ({
           id: c._id.toString(),
@@ -879,8 +944,8 @@ const response = await fetch(`http://localhost:3000/chats?userId=${window.curren
     // loadChatsFromDB().then(() => newChat())
 
     function logout() {
-  auth.signOut()
-}
+      auth.signOut()
+    }
 
   </script>
 

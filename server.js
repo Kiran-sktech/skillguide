@@ -21,7 +21,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
 app.post('/chat', async (req, res) => {
   const { messages,chatId, userId } = req.body
 
-    console.log('route hit! chatId:', chatId, 'userId:', userId)
+    // console.log('route hit! chatId:', chatId, 'userId:', userId)
 
   if (!messages || messages.length === 0) {
     return res.status(400).json({ error: 'Messages are required' })
@@ -48,7 +48,6 @@ if (mongoose.Types.ObjectId.isValid(chatId)) {
 
 
    if (!chat) {
-    console.log('Creating new chat with userId:', userId)
   // const { userId } = req.body
   chat = new Chat({
     userId,
@@ -73,10 +72,10 @@ if (mongoose.Types.ObjectId.isValid(chatId)) {
 app.get('/chats', async (req, res) => {
   try {
     const { userId } = req.query
-    console.log('Query received:', req.query)
-    console.log('Fetching chats for userId:', userId)
+    // console.log('Query received:', req.query)
+    // console.log('Fetching chats for userId:', userId)
     const chats = await Chat.find({ userId }).sort({ createdAt: -1 })
-    console.log('Found chats:', chats.length)
+    // console.log('Found chats:', chats.length)
     res.json(chats)
   } catch (error) {
     res.status(500).json({ error: 'Could not fetch chats' })
@@ -85,4 +84,14 @@ app.get('/chats', async (req, res) => {
 
 app.listen(3000, () => {
   console.log('Server running on port 3000')
+})
+
+
+app.delete('/chats/:id', async (req, res) => {
+  try {
+    await Chat.findByIdAndDelete(req.params.id)
+    res.json({ success: true })
+  } catch (error) {
+    res.status(500).json({ error: 'Could not delete chat' })
+  }
 })
