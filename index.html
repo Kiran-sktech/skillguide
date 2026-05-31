@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SkillGuide</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -220,6 +222,7 @@
     }
 
     #welcome h2 {
+      font-family: 'Fraunces', serif;
       font-size: 22px;
       font-weight: 600;
       color: #fff;
@@ -554,7 +557,9 @@
   gap: 20px;
   z-index: 999;
 ">
-    <div style="font-size: 40px;">🎓</div>
+    <div style="font-size: 40px;" >
+      <img src="logo.png"6height="80" width="80">
+    </div>
     <h2 style="color: #fff; font-size: 24px; letter-spacing: -0.03em;">Welcome to SkillGuide</h2>
     <p style="color: #52525b; font-size: 14px;">Your AI learning mentor</p>
     <button id="google-login-btn" style="
@@ -937,7 +942,7 @@
         newChat()
       } catch (err) {
         console.log('Could not load chats:', err)
-        newchat()
+        newChat()
       }
     }
 
