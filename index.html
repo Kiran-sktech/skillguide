@@ -800,7 +800,7 @@
       e.stopPropagation()
 
       try {
-        await fetch(`http://localhost:3000/chats/${chatId}`, {
+        await fetch(`https://skillguide.onrender.com/chats/${chatId}`, {
           method: 'DELETE'
         })
 
@@ -886,7 +886,7 @@
       addThinking()
 
       try {
-        const response = await fetch('http://localhost:3000/chat', {
+        const response = await fetch('https://skillguide.onrender.com/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ messages: messageHistory, chatId: currentChatId, userId: window.currentUserId })
@@ -929,7 +929,7 @@
     async function loadChatsFromDB() {
       // console.log('Loading chats for userId:', window.currentUserId)
       try {
-        const response = await fetch(`http://localhost:3000/chats?userId=${window.currentUserId}`)
+        const response = await fetch(`https://skillguide.onrender.com/chats?userId=${window.currentUserId}`)
         const data = await response.json()
 
         chats = data.map(c => ({
