@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const mongoose = require('mongoose')
-const Chat = require('./Chat')
+const Chat = require('./chat')
 
 const express = require('express')
 const Groq = require('groq-sdk')
