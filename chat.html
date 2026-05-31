@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillGuide</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+
+  </script>
+
+
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #080808;
+      color: #e4e4e7;
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* SIDEBAR */
+    #sidebar {
+      width: 240px;
+      background: #0f0f0f;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 10px;
+      gap: 6px;
+      border-right: 1px solid #1f1f1f;
+      flex-shrink: 0;
+    }
+
+   .sidebar-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px 16px;
+  border-bottom: 1px solid #1f1f1f;
+  margin-bottom: 6px;
+}
+
+    .logo-icon {
+      width: 48px;
+      height: 38px;
+      background: #fff;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .sidebar-logo span {
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    #new-chat-btn {
+      background: transparent;
+      border: 1px solid #2a2a2a;
+      color: #a1a1aa;
+      padding: 9px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+      width: 100%;
+      text-align: left;
+    }
+
+    #new-chat-btn:hover {
+      background: #1a1a1a;
+      color: #fff;
+      border-color: #3a3a3a;
+    }
+
+    .section-label {
+      font-size: 10px;
+      color: #3f3f46;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 10px 12px 4px;
+      font-weight: 500;
+    }
+
+    #chat-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    #chat-list::-webkit-scrollbar {
+      width: 0px;
+    }
+
+    .chat-item {
+      padding: 8px 12px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 12.5px;
+      color: #71717a;
+      transition: all 0.15s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-item:hover {
+      background: #141414;
+      color: #d4d4d8;
+    }
+
+    .chat-item.active {
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    #sidebar-footer {
+      border-top: 1px solid #1f1f1f;
+      padding-top: 12px;
+      font-size: 11px;
+      color: #3f3f46;
+      text-align: center;
+      padding-bottom: 4px;
+    }
+
+    /* MAIN */
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #080808;
+    }
+
+    #header {
+      padding: 14px 24px;
+      border-bottom: 1px solid #141414;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    #chat-title {
+      font-size: 13px;
+      color: #f9f9fc;
+      font-weight: 400;
+    }
+
+    .model-badge {
+      background: #111;
+      border: 1px solid #222;
+      color: #52525b;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 0.03em;
+    }
+
+    #chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    #chat-box::-webkit-scrollbar {
+      width: 0px;
+    }
+
+    /* WELCOME */
+    #welcome {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 60px 40px;
+      text-align: center;
+    }
+
+    .welcome-icon {
+      width: 55px;
+      height: 55px;
+      background: transparent;
+      border: none;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    #welcome h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.03em;
+    }
+
+    #welcome p {
+      font-size: 14px;
+      color: #52525b;
+      max-width: 380px;
+      line-height: 1.6;
+    }
+
+    .suggestion-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .chip {
+      background: #0f0f0f;
+      border: 1px solid #222;
+      color: #71717a;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .chip:hover {
+      background: #1a1a1a;
+      color: #e4e4e7;
+      border-color: #333;
+    }
+
+    /* MESSAGES */
+    .message-row {
+      padding: 12px 0;
+      display: flex;
+      gap: 16px;
+      animation: fadeUp 0.2s ease;
+      max-width: 720px;
+      margin: 0 auto;
+      width: 100%;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-row.user {
+      flex-direction: row-reverse;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .avatar.bot {
+      background: #fff;
+      color: #080808;
+    }
+
+    .avatar.user {
+      background: #1a1a1a;
+      color: #71717a;
+      border: 1px solid #2a2a2a;
+    }
+
+    .bubble {
+      max-width: 88%;
+      font-size: 14px;
+      line-height: 1.75;
+      color: #d4d4d8;
+      padding-top: 2px;
+    }
+
+    .message-row.user .bubble {
+      background: #111;
+      border: 1px solid #1f1f1f;
+      padding: 10px 14px;
+      border-radius: 12px 2px 12px 12px;
+      color: #e4e4e7;
+    }
+
+    .bubble p {
+      margin-bottom: 8px;
+    }
+
+    .bubble p:last-child {
+      margin-bottom: 0;
+    }
+
+    .bubble ul,
+    .bubble ol {
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
+
+    .bubble li {
+      margin-bottom: 4px;
+    }
+
+    .bubble h1,
+    .bubble h2,
+    .bubble h3 {
+      color: #fff;
+      margin: 14px 0 6px;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+
+    .bubble code {
+      background: #111;
+      border: 1px solid #222;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 12.5px;
+      color: #a1a1aa;
+    }
+
+    .bubble pre {
+      background: #0d0d0d;
+      border: 1px solid #1f1f1f;
+      border-radius: 8px;
+      padding: 14px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+
+    .bubble pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: #d4d4d8;
+    }
+
+    .bubble strong {
+      color: #fff;
+    }
+
+    /* THINKING */
+    .thinking {
+      display: flex;
+      gap: 4px;
+      padding: 8px 0;
+      align-items: center;
+    }
+
+    .thinking span {
+      width: 6px;
+      height: 6px;
+      background: #3f3f46;
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+
+    .thinking span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .thinking span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0);
+        opacity: 0.4;
+      }
+
+      30% {
+        transform: translateY(-5px);
+        opacity: 1;
+      }
+    }
+
+    /* INPUT */
+    #input-wrapper {
+      padding: 12px 24px 24px;
+      flex-shrink: 0;
+    }
+
+    #input-container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #0f0f0f;
+      border: 1px solid #222;
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    #input-container:focus-within {
+      border-color: #333;
+    }
+
+    #input-top {
+      display: flex;
+      align-items: flex-end;
+      padding: 14px 14px 10px;
+      gap: 10px;
+    }
+
+    #input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #e4e4e7;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      resize: none;
+      line-height: 1.5;
+      max-height: 120px;
+    }
+
+    #input::placeholder {
+      color: #3f3f46;
+    }
+
+    #input-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px 12px;
+      border-top: 1px solid #141414;
+    }
+
+    .input-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .action-btn {
+      background: transparent;
+      border: 1px solid #222;
+      color: #52525b;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .action-btn:hover {
+      background: #141414;
+      color: #a1a1aa;
+      border-color: #2a2a2a;
+    }
+
+    #send-btn {
+      width: 30px;
+      height: 30px;
+      background: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    #send-btn:hover {
+      background: #e4e4e7;
+      transform: scale(0.97);
+    }
+
+    #send-btn:active {
+      transform: scale(0.93);
+    }
+
+    #send-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: #080808;
+    }
+
+    #input-hint {
+      text-align: center;
+      font-size: 11px;
+      color: #27272a;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" style="
+  position: fixed; inset: 0;
+  background: #080808;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 999;
+">
+    <div style="font-size: 40px;" >
+      <img src="logo.png"6height="80" width="80">
+    </div>
+    <h2 style="color: #fff; font-size: 24px; letter-spacing: -0.03em;">Welcome to SkillGuide</h2>
+    <p style="color: #52525b; font-size: 14px;">Your AI learning mentor</p>
+    <button id="google-login-btn" style="
+    background: #fff;
+    color: #080808;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Inter', sans-serif;
+  ">
+      <img src="https://www.google.com/favicon.ico" width="16"> Continue with Google
+    </button>
+  </div>
+
+  <div id="sidebar">
+    <div class="sidebar-logo">
+  <img src="logo.png" height="75" style="object-fit: contain;">
+</div>
+
+
+
+    <button id="new-chat-btn" onclick="newChat()">
+      ✏️ New Chat
+    </button>
+    <div class="section-label">Recent</div>
+    <div id="chat-list"></div>
+    <div id="sidebar-footer">
+      <div id="user-profile" style="
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #141414;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  ">
+        <img id="user-avatar" src="" width="28" height="28" style="border-radius: 50%; flex-shrink:0;">
+        <span id="user-name"
+          style="font-size: 12px; color: #a1a1aa; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></span>
+        <button onclick="logout()" style="
+      background: transparent;
+      border: 1px solid #2a2a2a;
+      color: #52525b;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    " onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#52525b'">
+          Logout
+        </button>
+      </div>
+      <div style="font-size: 11px; color: #27272a; text-align:center;">Powered by Groq · LLaMA 3.3</div>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="header">
+      <div id="chat-title">SkillGuide</div>
+      <div class="model-badge">⚡ LLaMA 3.3 70B</div>
+    </div>
+
+    <div id="chat-box"></div>
+
+    <div id="input-wrapper">
+      <div id="input-container">
+        <div id="input-top">
+          <textarea id="input" rows="1" placeholder="Ask anything you want to learn..."></textarea>
+          <button id="send-btn" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+            </svg>
+          </button>
+        </div>
+        <div id="input-bottom">
+          <div class="input-actions">
+            <button class="action-btn">📎 Attach</button>
+            <button class="action-btn">🌐 Public</button>
+          </div>
+          <div style="font-size:11px;color:#27272a;">Enter to send</div>
+        </div>
+      </div>
+      <div id="input-hint">SkillGuide guides you to think, not just gives answers</div>
+    </div>
+  </div>
+
+  <script>
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDvME58lvQHxOyzzAJR_OE58efYqwe_4sc",
+      authDomain: "skillguide-bfafd.firebaseapp.com",
+      projectId: "skillguide-bfafd",
+      storageBucket: "skillguide-bfafd.firebasestorage.app",
+      messagingSenderId: "1089807024172",
+      appId: "1:1089807024172:web:446723b1771311a5b29189"
+    };
+    firebase.initializeApp(firebaseConfig)
+    const auth = firebase.auth()
+    const provider = new firebase.auth.GoogleAuthProvider()
+
+
+    const chatBox = document.getElementById('chat-box')
+    const input = document.getElementById('input')
+    const chatList = document.getElementById('chat-list')
+    const chatTitle = document.getElementById('chat-title')
+
+    let chats = []
+    let currentChatId = null
+    let messageHistory = []
+
+    function generateId() { return Date.now().toString() }
+
+    function showWelcome() {
+      chatBox.innerHTML = `
+        <div id="welcome">
+          <div class="welcome-icon"><img src="logo.png" height="100" style="object-fit:contain;"></div>
+          <h2>What do you want to learn?</h2>
+          <p>Ask me anything — I'll guide you step by step like a personal mentor.</p>
+          <div class="suggestion-chips">
+            <button class="chip" onclick="sendChip('How do I start learning JavaScript?')">JavaScript basics</button>
+            <button class="chip" onclick="sendChip('Explain DSA in simple terms')">DSA explained</button>
+            <button class="chip" onclick="sendChip('How does React work?')">How React works</button>
+            <button class="chip" onclick="sendChip('What is an API?')">What is an API?</button>
+            <button class="chip" onclick="sendChip('How do I prepare for placement interviews?')">Placement prep</button>
+          </div>
+        </div>
+      `
+    }
+
+
+    // Login button
+    document.getElementById('google-login-btn').addEventListener('click', () => {
+      auth.signInWithPopup(provider)
+    })
+
+    // Auth state listener
+    auth.onAuthStateChanged((user) => {
+
+      if (user) {
+        // User logged in
+        document.getElementById('login-screen').style.display = 'none'
+        document.getElementById('user-avatar').src = user.photoURL
+        document.getElementById('user-name').textContent = user.displayName
+        window.currentUserId = user.uid
+        loadChatsFromDB()
+      } else {
+        // User logged out
+        document.getElementById('login-screen').style.display = 'flex'
+        document.getElementById('user-avatar').src = ''
+        document.getElementById('user-name').textContent = ''
+        window.currentUserId = null
+      }
+    })
+
+    function newChat() {
+      const id = generateId()
+      const chat = { id, title: 'New Chat', messages: [] }
+      chats.unshift(chat)
+      currentChatId = id
+      messageHistory = []
+      renderSidebar()
+      showWelcome()
+      chatTitle.textContent = 'SkillGuide'
+      input.focus()
+    }
+
+    function switchChat(id) {
+      const chat = chats.find(c => c.id === id)
+      if (!chat) return
+      currentChatId = id
+      messageHistory = chat.messages.map(m => ({
+        role: m.role === 'bot' ? 'assistant' : 'user',
+        content: m.content
+      }))
+      renderSidebar()
+      chatBox.innerHTML = ''
+      if (chat.messages.length === 0) { showWelcome(); return; }
+      chat.messages.forEach(m => addMessageToDOM(m.role, m.content))
+      chatTitle.textContent = chat.title
+    }
+
+    function renderSidebar() {
+      chatList.innerHTML = ''
+      chats.forEach(chat => {
+        const div = document.createElement('div')
+        div.className = 'chat-item' + (chat.id === currentChatId ? ' active' : '')
+        div.style.display = 'flex'
+        div.style.alignItems = 'center'
+        div.innerHTML = `
+      <span style="flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${chat.title}</span>
+      <button class="delete-chat-btn" onclick="deleteChat(event, '${chat.id}')" style="
+        background: transparent;
+        border: none;
+        color: #3f3f46;
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 4px;
+        display: none;
+        flex-shrink: 0;
+      ">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3,6 5,6 21,6"></polyline>
+          <path d="M19,6l-1,14H6L5,6"></path>
+          <path d="M10,11v6"></path>
+          <path d="M14,11v6"></path>
+          <path d="M9,6V4h6v2"></path>
+        </svg>
+      </button>
+    `
+        div.querySelector('.delete-chat-btn').addEventListener('mouseenter', function () {
+          this.style.color = '#ef4444'
+        })
+        div.querySelector('.delete-chat-btn').addEventListener('mouseleave', function () {
+          this.style.color = '#3f3f46'
+        })
+        div.addEventListener('mouseenter', () => {
+          div.querySelector('.delete-chat-btn').style.display = 'block'
+        })
+        div.addEventListener('mouseleave', () => {
+          div.querySelector('.delete-chat-btn').style.display = 'none'
+        })
+        div.addEventListener('click', (e) => {
+          if (!e.target.closest('.delete-chat-btn')) switchChat(chat.id)
+        })
+        chatList.appendChild(div)
+      })
+    }
+
+    async function deleteChat(e, chatId) {
+      e.stopPropagation()
+
+      try {
+        await fetch(`https://skillguide.onrender.com/chats/${chatId}`, {
+          method: 'DELETE'
+        })
+
+        chats = chats.filter(c => c.id !== chatId)
+
+        if (currentChatId === chatId) {
+          currentChatId = null
+          messageHistory = []
+          if (chats.length > 0) {
+            switchChat(chats[0].id)
+          } else {
+            newChat()
+          }
+        }
+
+        renderSidebar()
+
+      } catch (err) {
+        console.log('Could not delete chat:', err)
+      }
+    }
+
+
+    function addMessageToDOM(role, content) {
+      const w = document.getElementById('welcome')
+      if (w) w.remove()
+
+      const row = document.createElement('div')
+      row.className = `message-row ${role}`
+
+      const avatar = document.createElement('div')
+      avatar.className = `avatar ${role}`
+      avatar.textContent = role === 'bot' ? 'S' : 'Y'
+
+      const bubble = document.createElement('div')
+      bubble.className = 'bubble'
+      if (role === 'bot') {
+        bubble.innerHTML = marked.parse(content)
+      } else {
+        bubble.textContent = content
+      }
+
+      row.appendChild(avatar)
+      row.appendChild(bubble)
+      chatBox.appendChild(row)
+      chatBox.scrollTop = chatBox.scrollHeight
+    }
+
+    function addThinking() {
+      const row = document.createElement('div')
+      row.className = 'message-row bot'
+      row.id = 'thinking-row'
+      row.innerHTML = `
+        <div class="avatar bot">S</div>
+        <div class="bubble"><div class="thinking"><span></span><span></span><span></span></div></div>
+      `
+      chatBox.appendChild(row)
+      chatBox.scrollTop = chatBox.scrollHeight
+    }
+
+    async function sendMessage(overrideText) {
+      const message = overrideText || input.value.trim()
+      if (!message) return
+
+      if (!currentChatId) newChat()
+
+      input.value = ''
+      input.style.height = 'auto'
+
+      addMessageToDOM('user', message)
+      messageHistory.push({ role: 'user', content: message })
+
+      const chat = chats.find(c => c.id === currentChatId)
+      if (chat) {
+        if (chat.title === 'New Chat') {
+          chat.title = message.slice(0, 28) + (message.length > 28 ? '...' : '')
+          chatTitle.textContent = chat.title
+          renderSidebar()
+        }
+        chat.messages.push({ role: 'user', content: message })
+      }
+
+      addThinking()
+
+      try {
+        const response = await fetch('https://skillguide.onrender.com/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: messageHistory, chatId: currentChatId, userId: window.currentUserId })
+
+        })
+        // console.log('Sending userId:', window.currentUserId)
+
+        const data = await response.json()
+        document.getElementById('thinking-row')?.remove()
+
+        const reply = data.reply
+        if (data.chatId && chat) chat.id = data.chatId.toString()
+        messageHistory.push({ role: 'assistant', content: reply })
+        if (chat) chat.messages.push({ role: 'bot', content: reply })
+
+        addMessageToDOM('bot', reply)
+
+      } catch (err) {
+        document.getElementById('thinking-row')?.remove()
+        addMessageToDOM('bot', 'Something went wrong. Is your server running?')
+      }
+    }
+
+    function sendChip(text) { sendMessage(text) }
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        sendMessage()
+      }
+    })
+
+    input.addEventListener('input', () => {
+      input.style.height = 'auto'
+      input.style.height = Math.min(input.scrollHeight, 120) + 'px'
+    })
+
+
+
+    async function loadChatsFromDB() {
+      // console.log('Loading chats for userId:', window.currentUserId)
+      try {
+        const response = await fetch(`https://skillguide.onrender.com/chats?userId=${window.currentUserId}`)
+        const data = await response.json()
+
+        chats = data.map(c => ({
+          id: c._id.toString(),
+          title: c.title,
+          messages: c.messages
+        }))
+
+        renderSidebar()
+        newChat()
+      } catch (err) {
+        console.log('Could not load chats:', err)
+        newChat()
+      }
+    }
+
+    // loadChatsFromDB().then(() => newChat())
+
+    function logout() {
+      auth.signOut()
+    }
+
+  </script>
+
+</body>
+
+</html>
